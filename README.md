@@ -94,7 +94,7 @@ broker.id=0
 zookeeper.connect=localhost:2181
 
 nano etc/kafka/zookeeper.properties
-# Ensure:
+#### Ensure:
 dataDir=/var/zookeeper
 
 ### Step 3: Start Kafka Broker
