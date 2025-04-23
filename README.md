@@ -65,18 +65,27 @@ Post-Kafka (news_consumer.py):
 ### Step 1: Install and Configure Zookeeper
 
 wget https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz
+
 tar -xzf zookeeper-3.4.14.tar.gz
+
+rm -r -xzf zookeeper-3.4.14.tar.gz
+
 cd zookeeper-3.4.14/conf
+
 cp zoo_sample.cfg zoo.cfg
+
 nano zoo.cfg
 
 Add at end of zoo.cfg:
 
 dataDir=/var/zookeeper
+
 server.0=127.0.0.1:2888:3888
 
 sudo mkdir /var/zookeeper
+
 sudo chown $USER:$USER /var/zookeeper
+
 echo "0" > /var/zookeeper/myid
 cd ..
 bin/zkServer.sh start
@@ -84,7 +93,9 @@ bin/zkServer.sh start
 ### Step 2: Install and Configure Kafka
 
 wget https://packages.confluent.io/archive/4.1/confluent-4.1.4-2.11.tar.gz
+
 tar -xzf confluent-4.1.4-2.11.tar.gz
+rm -r confluent-4.1.4-2.11.tar.gz
 cd confluent-4.1.4
 nano etc/kafka/server.properties
 
