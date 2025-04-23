@@ -40,25 +40,25 @@ Function: Pulls articles and publishes to Kafka topic news-stream
 
 Pre-Kafka (news_producer.py):
 
-spaCy NER for entity extraction
+  * spaCy NER for entity extraction
+  
+  * VADER for sentiment
 
-VADER for sentiment
-
-Reputation tagging, keyword extraction, word count
+  * Reputation tagging, keyword extraction, word count
 
 Post-Kafka (news_consumer.py):
 
-Cleansing, de-duplication, JSON formatting
-
-Saves to HDFS at /BigData/news-stream/news_data.json
+  *  Cleansing, de-duplication, JSON formatting
+    
+  * Saves to HDFS at /BigData/news-stream/news_data.json
 
 ### 3. Load
 
-Storage: HDFS
+* Storage: HDFS
 
-Hive Table: news_stream_db.news_articles
+* Hive Table: news_stream_db.news_articles
 
-Query Engine: Hive + JsonSerDe
+* Query Engine: Hive + JsonSerDe
 
 ## Setup Instructions
 
