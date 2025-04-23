@@ -87,7 +87,9 @@ sudo mkdir /var/zookeeper
 sudo chown $USER:$USER /var/zookeeper
 
 echo "0" > /var/zookeeper/myid
+
 cd ..
+
 bin/zkServer.sh start
 
 ### Step 2: Install and Configure Kafka
@@ -105,6 +107,7 @@ nano etc/kafka/server.properties
 Ensure these lines:
 
 broker.id=0
+
 zookeeper.connect=localhost:2181
 
 nano etc/kafka/zookeeper.properties
@@ -154,7 +157,6 @@ bin/kafka-topics --list --zookeeper localhost:2181
 To delete a  topic:
 
 bin/kafka-topics --delete --topic news-stream --zookeeper localhost:2181
-
 
 ### Step 7: Run Producer and Consumer Scripts
 
