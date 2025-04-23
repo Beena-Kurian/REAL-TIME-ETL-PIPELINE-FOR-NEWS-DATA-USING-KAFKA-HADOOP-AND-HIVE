@@ -1,10 +1,10 @@
-#### REAL-TIME ETL PIPELINE FOR NEWS DATA USING KAFKA, HADOOP, AND HIVE
+# REAL-TIME ETL PIPELINE FOR NEWS DATA USING KAFKA, HADOOP, AND HIVE
 
 This project demonstrates a real-time ETL (Extract, Transform, Load) pipeline that collects, processes, and analyzes global news articles using a modern big data stack. The pipeline is built using Apache Kafka, Hadoop HDFS, and Apache Hive, and is powered by NLP techniques like Named Entity Recognition and Sentiment Analysis.
 
 The system automatically fetches news articles from NewsAPI across categories such as politics, technology, finance, health, and sports. The Kafka producer script (news_producer.py) fetches the articles, applies NLP transformations using Python libraries like spaCy and VADER, and streams them to a Kafka topic named news-stream.
 
-Transformations include:
+### Transformations include:
 
 * Keyword and named entity extraction using spaCy
 
@@ -16,7 +16,7 @@ The Kafka consumer (news_consumer.py) subscribes to the topic, processes and cle
 
 Apache Hive is then used to define an external table over the HDFS-stored JSON files, allowing powerful analytical queries using HiveQL.
 
-Use Cases
+### Use Cases
 
 * Tracking trending news topics
 
@@ -28,7 +28,7 @@ This project is ideal for students and professionals seeking hands-on experience
 
 ## Project Workflow
 
-1. Extract
+### 1. Extract
 
 Source: NewsAPI
 
@@ -36,7 +36,7 @@ Tool: news_producer.py
 
 Function: Pulls articles and publishes to Kafka topic news-stream
 
-2. Transform
+### 2. Transform
 
 Pre-Kafka (news_producer.py):
 
@@ -52,7 +52,7 @@ Cleansing, de-duplication, JSON formatting
 
 Saves to HDFS at /BigData/news-stream/news_data.json
 
-3. Load
+### 3. Load
 
 Storage: HDFS
 
@@ -62,7 +62,7 @@ Query Engine: Hive + JsonSerDe
 
 ## Setup Instructions
 
-Step 1: Install and Configure Zookeeper
+### Step 1: Install and Configure Zookeeper
 
 wget https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz
 tar -xzf zookeeper-3.4.14.tar.gz
@@ -81,7 +81,7 @@ echo "0" > /var/zookeeper/myid
 cd ..
 bin/zkServer.sh start
 
-Step 2: Install and Configure Kafka
+### Step 2: Install and Configure Kafka
 
 wget https://packages.confluent.io/archive/4.1/confluent-4.1.4-2.11.tar.gz
 tar -xzf confluent-4.1.4-2.11.tar.gz
@@ -97,7 +97,7 @@ nano etc/kafka/zookeeper.properties
 # Ensure:
 dataDir=/var/zookeeper
 
-Step 3: Start Kafka Broker
+### Step 3: Start Kafka Broker
 
 # Foreground
 bin/kafka-server-start etc/kafka/server.properties
@@ -108,18 +108,18 @@ nohup bin/kafka-server-start etc/kafka/server.properties > /dev/null 2>&1 &
 # Stop Kafka
 bin/kafka-server-stop
 
-Step 4: Check Status
+### Step 4: Check Status
 
 bin/zkServer.sh status
 netstat -an | grep 9092
 
-Step 5: Python Environment Setup
+### Step 5: Python Environment Setup
 
 pip install kafka-python newsapi-python spacy nltk
 python -m nltk.downloader vader_lexicon
 python -m spacy download en_core_web_sm
 
-Step 6: Create Kafka Topic (First-time Only)
+### Step 6: Create Kafka Topic (First-time Only)
 
 bin/kafka-topics --create \
 --zookeeper localhost:2181 \
@@ -127,20 +127,20 @@ bin/kafka-topics --create \
 --partitions 1 \
 --topic news-stream
 
-Step 7: Run Producer and Consumer Scripts
+### Step 7: Run Producer and Consumer Scripts
 
-# Terminal 1
+#### Terminal 1
 python news_producer.py
 
-# Terminal 2
+#### Terminal 2
 python news_consumer.py
 
-# Terminal 3 - HDFS Output Check  
+#### Terminal 3 - HDFS Output Check  
 
 hadoop fs -ls /BigData/news-stream
 hadoop fs -cat /BigData/news-stream/news_data.json | head -n 3
 
-# Terminal 4 - Hive Table Setup
+#### Terminal 4 - Hive Table Setup
 
 CREATE DATABASE news_stream_db;
 USE news_stream_db;
@@ -174,7 +174,7 @@ LOCATION '/BigData/news-stream/';
 -- If needed (each time you open hive)
 ADD JAR /usr/lib/hive-hcatalog/share/hcatalog/hive-hcatalog-core-3.1.3.jar;
 
-## Sample Hive Queries
+#### Sample Hive Queries
 
 -- Sentiment Distribution
 SELECT sentiment, COUNT(*) AS total_articles FROM news_articles GROUP BY sentiment ORDER BY total_articles DESC;
@@ -188,7 +188,7 @@ SELECT source, COUNT(*) AS article_count FROM news_articles WHERE reputation = '
 -- Top Authors
 SELECT author, COUNT(*) AS article_count FROM news_articles WHERE author IS NOT NULL AND author != 'Unknown' GROUP BY author ORDER BY article_count DESC LIMIT 5;
 
-## Future Scope
+### Future Scope
 Use Spark for faster processing
 Data Visualisations
 Add dashboards 
