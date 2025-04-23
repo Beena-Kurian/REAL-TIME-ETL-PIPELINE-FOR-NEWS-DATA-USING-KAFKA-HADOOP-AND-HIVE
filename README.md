@@ -95,8 +95,11 @@ bin/zkServer.sh start
 wget https://packages.confluent.io/archive/4.1/confluent-4.1.4-2.11.tar.gz
 
 tar -xzf confluent-4.1.4-2.11.tar.gz
+
 rm -r confluent-4.1.4-2.11.tar.gz
+
 cd confluent-4.1.4
+
 nano etc/kafka/server.properties
 
 Ensure these lines:
@@ -105,64 +108,84 @@ broker.id=0
 zookeeper.connect=localhost:2181
 
 nano etc/kafka/zookeeper.properties
+
 #### Ensure:
+
 dataDir=/var/zookeeper
 
 ### Step 3: Start Kafka Broker
 
 #### Foreground
+
 bin/kafka-server-start etc/kafka/server.properties
 
 #### Or background
+
 nohup bin/kafka-server-start etc/kafka/server.properties > /dev/null 2>&1 &
 
 #### Stop Kafka
+
 bin/kafka-server-stop
 
 ### Step 4: Check Status
 
 bin/zkServer.sh status
+
 netstat -an | grep 9092
 
 ### Step 5: Python Environment Setup
 
 pip install kafka-python newsapi-python spacy nltk
+
 python -m nltk.downloader vader_lexicon
+
 python -m spacy download en_core_web_sm
 
 ### Step 6: Create Kafka Topic (First-time Only)
 
+To Create a topic called news-stream:
 
 bin/kafka-topics --create --topic news-stream --zookeeper localhost:2181 --partitions 1 --replication-factor 1
 
 To list topics:
+
 bin/kafka-topics --list --zookeeper localhost:2181
 
 To delete a  topic:
+
 bin/kafka-topics --delete --topic news-stream --zookeeper localhost:2181
 
 
 ### Step 7: Run Producer and Consumer Scripts
 
 #### Terminal 1
+
 Create folders to save results in HDFS:
 
 hadoop fs -mkdir -p BigData/news-stream
 
-#### Terminal 2
+#### Terminal 2 - Run Producer
+
 python news_producer.py
 
-#### Terminal 3 
+#### Terminal 3 - Run Consumer
+
 python news_consumer.py
 
 #### Terminal 4 - HDFS Output Check  
 
 hadoop fs -ls /BigData/news-stream
+
 hadoop fs -cat /BigData/news-stream/news_data.json | head -n 3
 
 #### Terminal 5 - Hive Table Setup
 
+-- If needed (each time you open hive)
+
+ADD JAR /usr/lib/hive-hcatalog/share/hcatalog/hive-hcatalog-core-3.1.3.jar;
+
 CREATE DATABASE news_stream_db;
+
 USE news_stream_db;
 
 CREATE EXTERNAL TABLE IF NOT EXISTS news_articles (
@@ -191,26 +214,32 @@ WITH SERDEPROPERTIES ("ignore.malformed.json" = "true")
 STORED AS TEXTFILE
 LOCATION '/BigData/news-stream/';
 
--- If needed (each time you open hive)
-ADD JAR /usr/lib/hive-hcatalog/share/hcatalog/hive-hcatalog-core-3.1.3.jar;
 
 #### Sample Hive Queries
 
 -- Sentiment Distribution
+
 SELECT sentiment, COUNT(*) AS total_articles FROM news_articles GROUP BY sentiment ORDER BY total_articles DESC;
 
 -- Top 10 Keywords
+
 SELECT keyword, COUNT(*) AS frequency FROM news_articles LATERAL VIEW explode(keywords) tmp AS keyword WHERE keyword != 'Unknown' GROUP BY keyword ORDER BY frequency DESC LIMIT 10;
 
 -- Trusted Sources
+
 SELECT source, COUNT(*) AS article_count FROM news_articles WHERE reputation = 'Trusted' GROUP BY source ORDER BY article_count DESC;
 
 -- Top Authors
+
 SELECT author, COUNT(*) AS article_count FROM news_articles WHERE author IS NOT NULL AND author != 'Unknown' GROUP BY author ORDER BY article_count DESC LIMIT 5;
 
 ### Future Scope
+
 Use Spark for faster processing
+
 Data Visualisations
+
 Add dashboards 
+
 Enhance sentiment model accuracy
 
