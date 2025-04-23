@@ -99,13 +99,13 @@ dataDir=/var/zookeeper
 
 ### Step 3: Start Kafka Broker
 
-# Foreground
+#### Foreground
 bin/kafka-server-start etc/kafka/server.properties
 
-# Or background
+#### Or background
 nohup bin/kafka-server-start etc/kafka/server.properties > /dev/null 2>&1 &
 
-# Stop Kafka
+#### Stop Kafka
 bin/kafka-server-stop
 
 ### Step 4: Check Status
@@ -121,26 +121,35 @@ python -m spacy download en_core_web_sm
 
 ### Step 6: Create Kafka Topic (First-time Only)
 
-bin/kafka-topics --create \
---zookeeper localhost:2181 \
---replication-factor 1 \
---partitions 1 \
---topic news-stream
+
+bin/kafka-topics --create --topic news-stream --zookeeper localhost:2181 --partitions 1 --replication-factor 1
+
+To list topics:
+bin/kafka-topics --list --zookeeper localhost:2181
+
+To delete a  topic:
+bin/kafka-topics --delete --topic news-stream --zookeeper localhost:2181
+
 
 ### Step 7: Run Producer and Consumer Scripts
 
 #### Terminal 1
-python news_producer.py
+Create folders to save results in HDFS:
+
+hadoop fs -mkdir -p BigData/news-stream
 
 #### Terminal 2
+python news_producer.py
+
+#### Terminal 3 
 python news_consumer.py
 
-#### Terminal 3 - HDFS Output Check  
+#### Terminal 4 - HDFS Output Check  
 
 hadoop fs -ls /BigData/news-stream
 hadoop fs -cat /BigData/news-stream/news_data.json | head -n 3
 
-#### Terminal 4 - Hive Table Setup
+#### Terminal 5 - Hive Table Setup
 
 CREATE DATABASE news_stream_db;
 USE news_stream_db;
